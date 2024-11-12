@@ -2,3 +2,7 @@
 *.vscode
 venv/
 gen/
+bd*/
+logs
+**/__pycache__/
+openocd.cfg

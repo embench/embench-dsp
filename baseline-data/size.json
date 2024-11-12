@@ -1,0 +1,50 @@
+{
+  "biquad_cascade_df2T_f32_sos3_n1" : {
+    "text" : 30228,
+    "rodata" : 1056,
+    "data" : 2212,
+    "bss" : 412
+  },
+  "biquad_cascade_df2T_f32_sos3_n128" : {
+    "text" : 30228,
+    "rodata" : 1056,
+    "data" : 3228,
+    "bss" : 924
+  },
+  "dct4_2048_f32" : {
+    "text" : 34012,
+    "rodata" : 45648,
+    "data" : 18100,
+    "bss" : 16772
+  },
+  "dct4_512_f32" : {
+    "text" : 34012,
+    "rodata" : 12208,
+    "data" : 5812,
+    "bss" : 4484
+  },
+  "fir_f32_taps256_n1" : {
+    "text" : 30380,
+    "rodata" : 1048,
+    "data" : 3772,
+    "bss" : 1412
+  },
+  "fir_f32_taps256_n128" : {
+    "text" : 30380,
+    "rodata" : 1048,
+    "data" : 4788,
+    "bss" : 2428
+  },
+  "rfft2048_f32" : {
+    "text" : 33620,
+    "rodata" : 21048,
+    "data" : 18100,
+    "bss" : 8580
+  },
+  "rfft512_f32" : {
+    "text" : 33620,
+    "rodata" : 6040,
+    "data" : 5812,
+    "bss" : 2436
+  }
+}
