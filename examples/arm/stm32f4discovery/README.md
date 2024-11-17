@@ -4,7 +4,7 @@
 This only need to be done once. It is not ideal, but this library is always built in tree.
 
 ```sh
-pushd examples/arm/stm32f4-discovery
+pushd examples/arm/stm32f4discovery
 make
 popd
 ```
