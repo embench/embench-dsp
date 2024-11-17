@@ -44,7 +44,6 @@ static uint8_t *__sbrk_heap_end = NULL;
 
 /* Functions */
 
-[[gnu::used]]
 int __io_putchar(int ch) {
 	ITM_SendChar(ch);
 	return(ch);
@@ -54,13 +53,11 @@ void initialise_monitor_handles()
 {
 }
 
-[[gnu::used]]
 int _getpid(void)
 {
   return 1;
 }
 
-[[gnu::used]]
 int _kill(int pid, int sig)
 {
   (void)pid;
@@ -69,14 +66,13 @@ int _kill(int pid, int sig)
   return -1;
 }
 
-[[gnu::used]]
 void _exit (int status)
 {
   _kill(status, -1);
   while (1) {}    /* Make sure we hang here */
 }
 
-__attribute__((weak, used)) int _read(int file, char *ptr, int len)
+__attribute__((weak)) int _read(int file, char *ptr, int len)
 {
   (void)file;
   int DataIdx;
@@ -89,7 +85,7 @@ __attribute__((weak, used)) int _read(int file, char *ptr, int len)
   return len;
 }
 
-__attribute__((weak, used)) int _write(int file, char *ptr, int len)
+__attribute__((weak)) int _write(int file, char *ptr, int len)
 {
   (void)file;
   int DataIdx;
@@ -101,7 +97,6 @@ __attribute__((weak, used)) int _write(int file, char *ptr, int len)
   return len;
 }
 
-__attribute__((externally_visible))
 int _close(int file)
 {
   (void)file;
@@ -109,7 +104,6 @@ int _close(int file)
 }
 
 
-[[gnu::used]]
 int _fstat(int file, struct stat *st)
 {
   (void)file;
@@ -117,14 +111,12 @@ int _fstat(int file, struct stat *st)
   return 0;
 }
 
-[[gnu::used]]
 int _isatty(int file)
 {
   (void)file;
   return 1;
 }
 
-[[gnu::used]]
 int _lseek(int file, int ptr, int dir)
 {
   (void)file;
@@ -133,7 +125,6 @@ int _lseek(int file, int ptr, int dir)
   return 0;
 }
 
-[[gnu::used]]
 int _open(char *path, int flags, ...)
 {
   (void)path;
@@ -142,7 +133,6 @@ int _open(char *path, int flags, ...)
   return -1;
 }
 
-[[gnu::used]]
 int _wait(int *status)
 {
   (void)status;
@@ -150,7 +140,6 @@ int _wait(int *status)
   return -1;
 }
 
-[[gnu::used]]
 int _unlink(char *name)
 {
   (void)name;
@@ -158,14 +147,12 @@ int _unlink(char *name)
   return -1;
 }
 
-[[gnu::used]]
 int _times(struct tms *buf)
 {
   (void)buf;
   return -1;
 }
 
-[[gnu::used]]
 int _stat(char *file, struct stat *st)
 {
   (void)file;
