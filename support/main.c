@@ -18,7 +18,5 @@ int __attribute__ ((used)) main (int argc __attribute__ ((unused)), char *argv[]
     
     res = test_main();
 
-    while(1){};
-
     return res;
 }

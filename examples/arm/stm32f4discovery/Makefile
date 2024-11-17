@@ -30,7 +30,7 @@ TGT_DEF    +=-DSTM32F407xx
 TGT_INC    +=-I $(TGT_DIR)/.. -I $(TGT_DIR)
 
 ### FLAGS
-TGT_FLG    +=$(TGT_ISA) $(TGT_DEF)
+TGT_FLG    +=$(TGT_ISA) $(TGT_DEF) -Os
 
 libstartup.a: startup.o system_stm32f4.o syscalls.o
 	arm-none-eabi-ar rcs $@ $^
