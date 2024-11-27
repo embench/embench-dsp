@@ -49,6 +49,9 @@ Note that a global scale factor of 1 is always used for code size runs.
 
 ## Measuring speed
 
+Make sure there is an open gdb server to the target on port `3333`.
+This should be the default when using `openocd examples/arm/stm32f4discovery/openocd.cfg`.
+
 ```sh
 ./benchmark_speed.py --builddir bd-arm-gcc-14.0.1-speed \
   --target-module=run_stm32f4-discovery \
