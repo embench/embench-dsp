@@ -24,7 +24,7 @@ tst_path      = os.path.realpath(__file__)
 tst_path      = tst_path[:tst_path.find("python")]
 
 # generated file path and names
-fpath         = os.path.join(tst_path, 'configs')
+fpath         = os.path.join(tst_path, 'cfg')
 input_fnm     = "in.c"
 output_fnm    = "out.c"
 ref_fnm       = "ref.c"

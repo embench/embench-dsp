@@ -39,7 +39,7 @@ TST_DEF    +=
 
 ### INCLUDES
 TST_INC    +=-I $(TST_DIR)
-TST_INC    +=-I $(TST_DIR)/configs/$(CFG)
+TST_INC    +=-I $(TST_DIR)/cfg/$(CFG)
 
 ### FLAGS
 TST_FLG    +=$(TST_DEF)
@@ -50,9 +50,9 @@ TST_SRC    +=$(DSP_DIR)/source/FilteringFunctions/arm_lms_f32.c
 TST_SRC    +=$(DSP_DIR)/source/FilteringFunctions/arm_lms_init_f32.c
 
 # data files
-TST_SRC    +=$(TST_DIR)/configs/$(CFG)/in.c
-TST_SRC    +=$(TST_DIR)/configs/$(CFG)/ref.c
-TST_SRC    +=$(TST_DIR)/configs/$(CFG)/out.c
+TST_SRC    +=$(TST_DIR)/cfg/$(CFG)/in.c
+TST_SRC    +=$(TST_DIR)/cfg/$(CFG)/ref.c
+TST_SRC    +=$(TST_DIR)/cfg/$(CFG)/out.c
 
 ### OBJECTS
 TST_OBJ    +=$(patsubst %.c,%.o, $(patsubst %.S,%.o,$(notdir $(TST_SRC))))
