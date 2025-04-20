@@ -33,4 +33,4 @@ benchmarks. The following are the key top level directories.
 
 - [`pylib`](./pylib): Support code for the python scripts.
 
-- [`benchmarks`](./benchmarks): Scripts to generate the data for existing benchmarks.
+- [`golden-ref`](./golden-ref): Scripts to generate the data for existing benchmarks.

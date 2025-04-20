@@ -42,13 +42,14 @@ def setup_directories(bd, config_dir):
     VariantDir(bd / "src", "src")
     VariantDir(bd / "support", "support")
     VariantDir(bd / "config", config_dir)
+    VariantDir(bd / "lib", "lib")
     SConsignFile(bd / ".sconsign.dblite")
 
 def populate_build_env(env, vars):
     vars.Update(env)
     env.Append(CPPDEFINES={ 'WARMUP_HEAT' : '${warmup_heat}',
                             'GLOBAL_SCALE_FACTOR' : '${gsf}'})
-    env.Append(CPPPATH=['support', config_dir])
+    env.Append(CPPPATH=['support', config_dir, 'lib'])
     env.Replace(CCFLAGS = "${cflags}")
     env.Replace(LINKFLAGS = "${ldflags}")
     env.Replace(CC = "${cc}")
@@ -56,15 +57,22 @@ def populate_build_env(env, vars):
     print(f"{env['user_libs']}".split())
     env.Prepend(LIBS = f"{env['user_libs']}".split())
 
+def build_lib_objects(env):
+    lib_objects = []
+    # Clone environment and add lib to include path
+    lib_objects += env.Object(Glob(str(bd / "lib" / "*.c")))
+    lib_objects += env.Object(Glob(str(bd / "lib" / "BasicMathFunctions" / "*.c")))
+    lib_objects += env.Object(Glob(str(bd / "lib" / "CommonTables" / "*.c")))
+    lib_objects += env.Object(Glob(str(bd / "lib" / "ComplexMathFunctions" / "*.c")))
+    lib_objects += env.Object(Glob(str(bd / "lib" / "dsp" / "*.c")))
+    lib_objects += env.Object(Glob(str(bd / "lib" / "FilteringFunctions" / "*.c")))
+    lib_objects += env.Object(Glob(str(bd / "lib" / "TransformFunctions" / "*.c")))
+    env.Default(lib_objects)
+    return lib_objects
+
 def build_support_objects(env):
     support_objects = []
     support_objects += env.Object(Glob(str(bd / "support" / "*.c")))
-    support_objects += env.Object(Glob(str(bd / "support" / "BasicMathFunctions" / "*.c")))
-    support_objects += env.Object(Glob(str(bd / "support" / "CommonTables" / "*.c")))
-    support_objects += env.Object(Glob(str(bd / "support" / "ComplexMathFunctions" / "*.c")))
-    support_objects += env.Object(Glob(str(bd / "support" / "dsp" / "*.c")))
-    support_objects += env.Object(Glob(str(bd / "support" / "FilteringFunctions" / "*.c")))
-    support_objects += env.Object(Glob(str(bd / "support" / "TransformFunctions" / "*.c")))
     support_objects += env.Object(str(bd / "config/boardsupport.c"))
     env.Default(support_objects)
     return support_objects
@@ -88,6 +96,7 @@ env.Help("\nCustomizable Variables:", append=True)
 env.Help(vars.GenerateHelpText(env), append=True)
 
 support_objects = build_support_objects(env)
+lib_objects = build_lib_objects(env)
 benchmark_paths = find_benchmarks(bd, env)
 
 benchmark_objects = {
@@ -98,5 +107,5 @@ benchmark_objects = {
 env.Default(benchmark_objects.values())
 
 for benchname, objects in benchmark_objects.items():
-    bench_exe = env.Program(str(benchname), objects + support_objects)
+    bench_exe = env.Program(str(benchname), objects + support_objects + lib_objects)
     env.Default(bench_exe)
