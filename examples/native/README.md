@@ -15,11 +15,11 @@ scons --config-dir=examples/native/ cflags="-Os -fdata-sections -ffunction-secti
 ## Measuring speed
 
 ```sh
-./benchmark_speed.py --target-module=run_stm32f4-discovery --gsf=1 --cpu-mhz=16
+./benchmark_speed.py --target-module=run_native --absolute
 ```
 
 ## Measuring size
 
 ```sh
-./benchmark_size.py
+./benchmark_size.py --absolute
 ```
