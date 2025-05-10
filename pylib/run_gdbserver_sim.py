@@ -85,7 +85,7 @@ def build_benchmark_cmd(path, args):
 
 def decode_results(stdout_str, stderr_str):
     """Extract the results from the output string of the run. Return the
-       elapsed time in milliseconds or zero if the run failed."""
+       elapsed time in microseconds or zero if the run failed."""
     # Return code is in standard output. We look for the string that means we
     # hit a breakpoint on _exit, then for the string returning the value.
     rcstr = re.search(
@@ -98,7 +98,7 @@ def decode_results(stdout_str, stderr_str):
     # The start and end cycle counts are in the stderr string
     times = re.search('(\d+)\D+(\d+)', stderr_str, re.S)
     if times:
-        ms_elapsed = float(int(times.group(2)) - int(times.group(1))) / 1000.0
+        ms_elapsed = float(int(times.group(2)) - int(times.group(1))) / args.cpu_mhz
         return ms_elapsed
 
     # We must have failed to find a time
@@ -110,7 +110,7 @@ def run_benchmark(bench, path, args):
        with target specific arguments. This function will be called
        in parallel unless if the number of tasks is limited via
        command line. "run_benchmark" should return the result in
-       milliseconds.
+       microseconds.
     """
     arglist = build_benchmark_cmd(path, args)
     try:

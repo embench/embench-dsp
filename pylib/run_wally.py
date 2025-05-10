@@ -54,7 +54,7 @@ def build_benchmark_cmd(path, args):
 
 def decode_results(stdout_str, stderr_str):
     """Extract the results from the output string of the run. Return the
-       elapsed time in milliseconds or zero if the run failed."""
+       elapsed time in microseconds or zero if the run failed."""
     # this reads in the output of the buildbench_cmd command, in this case we have 5 lines written to stdout_str
     # that contains the content of begin_signature, which writes the instret & cycles of begin & end triggers
     # along with the return code, which tells us if the test passed
@@ -74,7 +74,7 @@ def decode_results(stdout_str, stderr_str):
         log.debug('Warning: Failed to find timing')
         result = 0.0
     else:
-        result = ((pc_trigger)[1]-(pc_trigger)[0]) / cpu_mhz / 1000.0
+        result = ((pc_trigger)[1]-(pc_trigger)[0]) / cpu_mhz
 
     # log.debug('Simulation returned %d. 1 is Success, 3 is Failure', pc_trigger[4])
     # cycles, #insret, #CPI, Elapsed Time, ClkFreq
@@ -87,7 +87,7 @@ def run_benchmark(bench, path, args):
        with target specific arguments. This function will be called
        in parallel unless if the number of tasks is limited via
        command line. "run_benchmark" should return the result in
-       milliseconds.
+       microseconds.
     """
     arglist = build_benchmark_cmd(path, args)
     try:

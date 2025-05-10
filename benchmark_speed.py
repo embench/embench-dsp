@@ -199,7 +199,7 @@ def validate_args(args):
 
 def benchmark_speed(bench, args):
     """Time the benchmark.  "args" is a namespace of arguments, including
-       those specific to the target.  Result is a time in milliseconds, or
+       those specific to the target.  Result is a time in microseconds, or
        zero on failure."""
     appdir = os.path.join(gp['bd_benchdir'], bench)
     appexe = os.path.join(appdir,f"{bench}{gp['file_extension']}")
