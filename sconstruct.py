@@ -49,7 +49,7 @@ def populate_build_env(env, vars):
     vars.Update(env)
     env.Append(CPPDEFINES={ 'WARMUP_HEAT' : '${warmup_heat}',
                             'GLOBAL_SCALE_FACTOR' : '${gsf}'})
-    env.Append(CPPPATH=['support', config_dir, 'lib'])
+    env.Append(CPPPATH=['support', config_dir, 'lib/include'])
     env.Replace(CCFLAGS = "${cflags}")
     env.Replace(LINKFLAGS = "${ldflags}")
     env.Replace(CC = "${cc}")
@@ -60,13 +60,11 @@ def populate_build_env(env, vars):
 def build_lib_objects(env):
     lib_objects = []
     # Clone environment and add lib to include path
-    lib_objects += env.Object(Glob(str(bd / "lib" / "*.c")))
-    lib_objects += env.Object(Glob(str(bd / "lib" / "BasicMathFunctions" / "*.c")))
-    lib_objects += env.Object(Glob(str(bd / "lib" / "CommonTables" / "*.c")))
-    lib_objects += env.Object(Glob(str(bd / "lib" / "ComplexMathFunctions" / "*.c")))
-    lib_objects += env.Object(Glob(str(bd / "lib" / "dsp" / "*.c")))
-    lib_objects += env.Object(Glob(str(bd / "lib" / "FilteringFunctions" / "*.c")))
-    lib_objects += env.Object(Glob(str(bd / "lib" / "TransformFunctions" / "*.c")))
+    lib_objects += env.Object(Glob(str(bd / "lib" / "src" / "BasicMathFunctions" / "*.c")))
+    lib_objects += env.Object(Glob(str(bd / "lib" / "src" / "CommonTables" / "*.c")))
+    lib_objects += env.Object(Glob(str(bd / "lib" / "src" / "ComplexMathFunctions" / "*.c")))
+    lib_objects += env.Object(Glob(str(bd / "lib" / "src" / "FilteringFunctions" / "*.c")))
+    lib_objects += env.Object(Glob(str(bd / "lib" / "src" / "TransformFunctions" / "*.c")))
     env.Default(lib_objects)
     return lib_objects
 
