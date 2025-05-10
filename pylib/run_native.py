@@ -32,7 +32,7 @@ def get_target_args(remnant):
 
 def decode_results(stdout_str, stderr_str):
     """Extract the results from the output string of the run. Return the
-       elapsed time in milliseconds or zero if the run failed."""
+       elapsed time in microseconds or zero if the run failed."""
     # See above in build_benchmark_cmd how we record the return value and
     # execution time. Return code is in standard output. Execution time is in
     # standard error.
@@ -49,7 +49,7 @@ def decode_results(stdout_str, stderr_str):
         ms_elapsed = int(time.group(1)) * 1000 + \
                      int(time.group(2).ljust(3,'0')) # 0-pad
         # Return value cannot be zero (will be interpreted as error)
-        return max(float(ms_elapsed), 0.001)
+        return max(float(ms_elapsed * 1000), 0.001)
 
     # We must have failed to find a time
     log.debug('Warning: Failed to find timing')
@@ -60,7 +60,7 @@ def run_benchmark(bench, path, args):
        with target specific arguments. This function will be called
        in parallel unless if the number of tasks is limited via
        command line. "run_benchmark" should return the result in
-       milliseconds.
+       microseconds.
     """
 
     try:
