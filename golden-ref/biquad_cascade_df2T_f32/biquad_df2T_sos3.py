@@ -11,8 +11,8 @@ from scipy import signal
 N             = 128
 
 # USER: script settings
-en_plots      = False
-en_filegen    = False
+en_plots      = True
+en_filegen    = True
 
 
 # fixed seed for reproducibility
@@ -20,10 +20,10 @@ np.random.seed(42)
 
 # path to current test directory
 tst_path      = os.path.realpath(__file__)
-tst_path      = tst_path[:tst_path.find("python")]
+tst_path, _   = os.path.split(tst_path)
 
 # generated file path and names
-fpath         = os.path.join(tst_path, 'cfg')
+fpath         = os.path.join(tst_path, 'generated')
 input_fnm     = "in.c"
 output_fnm    = "out.c"
 coeff_fnm     = "coeff.c"

@@ -4,12 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-from scipy.fftpack import dct
-
-
-# USER: script settings
-en_plots      = True
-en_filegen    = False
+from scipy.fftpack import fft
 
 
 # fixed seed for reproducibility
@@ -17,15 +12,19 @@ np.random.seed(42)
 
 # path to current test directory
 tst_path      = os.path.realpath(__file__)
-tst_path      = tst_path[:tst_path.find("python")]
+tst_path, _   = os.path.split(tst_path)
+
+# script settings
+en_plots      = True
+en_filegen    = True
 
 # generated file path and names
-fpath         = os.path.join(tst_path, 'cfg', 'default')
+fpath         = os.path.join(tst_path, 'generated')
 input_fnm     = "in.c"
 output_fnm    = "out.c"
 header_fnm    = "data.h"
 # C array names
-input_arr_nm  = "inout"
+input_arr_nm  = "input"
 output_arr_nm = "output_ref"
 
 
@@ -49,7 +48,7 @@ def fwrite_array_f32(fname, arr_name, arr_size, arr, per_line):
     f.write("};\n")
 
 
-def fwrite_header(fname, dct_size, snr_ref, input_arr_nm, output_arr_nm):
+def fwrite_header(fname, N, ifft_flag, snr_ref, input_arr_nm, output_arr_nm):
   outdir, f = os.path.split(fname)
   if not os.path.exists(outdir):
     os.makedirs(outdir)
@@ -57,11 +56,12 @@ def fwrite_header(fname, dct_size, snr_ref, input_arr_nm, output_arr_nm):
     f.write("\n#ifndef DATA_H\n#define DATA_H\n")
     f.write("\n#include \"arm_math.h\"\n")
     f.write("\n")
-    f.write("#define DCT4_SIZE       ({:d})\n".format(dct_size))
+    f.write("#define FFT_SIZE        ({:d})\n".format(N))
+    f.write("#define IFFT_FLAG       ({:d})\n".format(ifft_flag))
     f.write("#define SNR_REF_THLD    ({:d})\n".format(snr_ref))
     f.write("\n")
-    f.write("extern float32_t {:}[DCT4_SIZE];\n".format(input_arr_nm))
-    f.write("extern float32_t {:}[DCT4_SIZE];\n".format(output_arr_nm))
+    f.write("extern float32_t {:}[FFT_SIZE];\n".format(input_arr_nm))
+    f.write("extern float32_t {:}[FFT_SIZE];\n".format(output_arr_nm))
     f.write("\n#endif  // DATA_H\n")
 
 
@@ -78,20 +78,36 @@ def snr_32b(ref, tst):
   return snr
 
 
-""" DCT Design """
-dct_size = 2048     # DCT size
+def repack_cmsis_rfft(X, N):
+  nyq = (N//2)
+  X_re = np.real(X)
+  X_im = np.imag(X)
+
+  X_dc = X_re[0]
+  X_nyq = X_re[nyq]
+
+  X_cmsis = [X_dc, X_nyq]
+  for i in range(1, nyq):
+    X_cmsis += [X_re[i], X_im[i]]
+
+  return np.array(X_cmsis)
+
+
+""" FFT Design """
+N  = 2048         # FFT size
+ifft_flag = False # IFFT not currently supported by this script
 
 
 """ Input Stimulus """
-fs   = 48000                      # sample frequency (Hz)
-n    = np.arange(dct_size)        # sample indices
-t    = n / fs                     # discrete time
-freq = (0.5*n / (dct_size/fs))    # discrete frequency
+fs = 48000                        # sample frequency
+n = np.arange(N)                  # sample indices
+t = n / fs                        # discrete time
+freq = n / (N/fs)                 # discrete frequency
 
 tone_freq_hz = [100, 4000, 8000]  # input tones
 tone_amp_dB  = [-30, -20, -10]    # input tone powers
 en_noise = True                   # optionally include zero-mean, unit std WGN
-noise_dB = -25                    # noise power
+noise_dB = -20                    # noise power
 
 # generate and sum up the pure tones
 x_pure = (np.power(10,(tone_amp_dB[0]/20))) * np.sin(2 * np.pi * tone_freq_hz[0] * t)
@@ -100,32 +116,33 @@ for i in range(1, len(tone_freq_hz)):
 
 # optionally add zero-mean gaussian white noise
 if en_noise:
-  x = x_pure + (np.power(10, (noise_dB/20)) * np.random.normal(0, 1, dct_size))
+  x = x_pure + (np.power(10, (noise_dB/20)) * np.random.normal(0, 1, N))
 else:
   x = x_pure
 
 # print(len(x), type(x))
 
 
-""" DCT Output """
-X = dct(x=x, type=4, n=dct_size, norm="ortho")
+""" FFT output """
+X = fft(x=x, n=N)
 
-# print(X, len(X))
 
+""" Pack the FFT output according to the CMSIS spec """
+X_cmsis = repack_cmsis_rfft(X, N)
 
 
 """ Calculate the expected SNR of 32b precision result """
 x_32b = x.astype(np.float32)
-X_32b = dct(x=x_32b, type=4, n=dct_size, norm="ortho")
-snr = snr_32b(X, X_32b)
-print("Expected 32b SNR = {:13.10f}".format(snr))
-# the cmsis implementation seems to introduce extra loss of precision
-snr_ref = 100
+X_32b = fft(x=x_32b, n=N)
+X_32b_cmsis = repack_cmsis_rfft(X_32b, N)
+snr = snr_32b(X_cmsis, X_32b_cmsis)
+# the cmsis implementation seems to introduce some small extra loss of precision
+snr_ref = int(snr) - 1
 
 
 """ Plot """
 if en_plots:
-  nyq = (dct_size//2)
+  nyq = (N//2)
   plt.figure(figsize = (12, 6))
   plt.subplot(121)
   if en_noise:
@@ -139,24 +156,24 @@ if en_plots:
   plt.ylabel('amplitude')
   plt.title('Input')
 
-  # Plot the good part of the filtered signal vs a pure 100hz tone
   plt.subplot(122)
-  plt.stem(freq, np.abs(X), 'b', markerfmt=" ", basefmt="-b")
+  # spectrum is symmetric for real input, so only plot the first half
+  plt.stem(freq[:nyq+1], np.abs(X[:nyq+1]), 'b', markerfmt=" ", basefmt="-b")
   plt.xlabel('frequency (Hz)')
   plt.ylabel('|X(freq)|')
-  plt.title('DCT Spectrum')
+  plt.title('Spectrum')
 
   plt.tight_layout()
   plt.show()
 
 
-""" Write to file """
+""" Write to files """
 if en_filegen:
   fname = os.path.join(fpath, input_fnm)
-  fwrite_array_f32(fname, arr_name=input_arr_nm, arr=x, arr_size='DCT4_SIZE', per_line=8)
+  fwrite_array_f32(fname, arr_name=input_arr_nm, arr_size='FFT_SIZE', arr=x, per_line=8)
 
   fname = os.path.join(fpath, output_fnm)
-  fwrite_array_f32(fname, arr_name=output_arr_nm, arr=X, arr_size='DCT4_SIZE', per_line=8)
+  fwrite_array_f32(fname, arr_name=output_arr_nm, arr_size='FFT_SIZE', arr=X_cmsis, per_line=8)
 
   fname = os.path.join(fpath, header_fnm)
-  fwrite_header(fname, dct_size=dct_size, snr_ref=snr_ref, input_arr_nm=input_arr_nm, output_arr_nm=output_arr_nm)
+  fwrite_header(fname, N, ifft_flag, snr_ref, input_arr_nm, output_arr_nm)
