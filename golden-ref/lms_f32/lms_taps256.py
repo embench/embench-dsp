@@ -121,7 +121,7 @@ else:
   x = x_pure
 
 # design the system "filter" that we want our adaptive filter to model
-#   --> we want it to act as a BPF, outputing only the second (4kHz) tone
+#   --> we want it to act as a LPF, outputing only the first (0.1kHz) tone
 y_ref = (np.power(10, (tone_amp_dB[0]/20))) * np.sin(2 * np.pi * tone_freq_hz[0] * t)
 
 # arrange the input and output ref on a sample-by-sample basis, preserving the history
