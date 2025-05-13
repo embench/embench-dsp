@@ -63,10 +63,9 @@ Issue:   1.0
 
 <!-- End of ToC insertion -->
 
-## Building and running Embench
+## Building and running Embench DSP
 
-The benchmarks have to be first compiled, then they can then be measured on
-the target.
+The benchmarks have to be first compiled, then they can then be measured on the target.
 
 ### Prerequisites
 
@@ -92,7 +91,7 @@ The following non-standard Python packages are needed.
 
 clone this git repository:
 ```bash
-git clone https://github.com/embench/embench-iot.git
+git clone https://github.com/embench/embench-dsp.git
 ```
 
 ### Configuring the benchmarks
@@ -143,26 +142,15 @@ The following variables are the most useful to be specified on the command line 
   latter case corresponding arguments in `ldflags` may be needed.  For example
   with GCC or Clang/LLVM if `-l` or `-l:` flags are used in `user_libs`, then
   `-L` flags may be needed in `ldflags`.  Default value is the empty list, `[]`.
-- `gsf`: The global scale factor used to ensure execution times of the
-  individual benchmarks are around 4 seconds.  As a guide, set this to the
-  clock rate of the target in MHz when measuring chip execution performance
-  and 1 when measuring code size performance.  Default value 16.
-- `warmup_heat`: How many times the benchmark code should be run to warm up
-  the caches.  Default value 1.
 
-Unknown variables are silently ignored.  There is no need to set an unused
-parameter, and any configuration file may be empty or missing if no flags need
-to be set.
+Unknown variables are silently ignored.  There is no need to set an unused parameter, and any configuration file may be empty or missing if no flags need to be set.
 
 ### Building the benchmarks
 
-Embench is built with _scons_ (see [scons.org](https://scons.org/).  The build
-script is [`sconstruct.py`](../sconstruct.py). 
+Embench is built with _scons_ (see [scons.org](https://scons.org/).  The build script is [`sconstruct.py`](../sconstruct.py). 
 
-See the README files in the [`examples`](../examples/) directory for typical
-scons invocations.  As well as the variables described above (section
-([Configuring the benchmarks](#configuring-the-benchmarks)), _scons_ takes the
-following options.
+See the README files in the [`examples`](../examples/) directory for typical scons invocations.  As well as the variables described above (section
+([Configuring the benchmarks](#configuring-the-benchmarks)), _scons_ takes the following options.
 
 - `--build-dir`: The programs are built out of tree, this specifies the
   directory in which to build.  It may be an absolute or relative directory
@@ -286,9 +274,7 @@ script, which takes the following general arguments.
 - `--gsf`: Provides the gsf used to build the benchmarks.
 - `--cpu-mhz`: Provides the mhz the cpu runs at, to get a cpu-normalized result.
 
-There is so much variation in how a benchmark can be run that the detailed
-implementation is left to a python module specified by `--target-module`. This
-module may define additional arguments. If this module has been specified when
+There is so much variation in how a benchmark can be run that the detailed implementation is left to a python module specified by `--target-module`. This module may define additional arguments. If this module has been specified when
 `--help` has also been specified, help will be provided on the target module's
 arguments.
 
@@ -297,27 +283,16 @@ arguments.
 For each benchmark run, you must record:
 
 - details of the platform used, including its clock speed;
-- if the platform is simulated or real.  If simulated, an indication of
-  accuracy must be stated (i.e., fully cycle accurate or cycle approximate);
-- for a simulated platform, configuration options of the chip should be stated
-  (e.g., branch predictor size, cache sizes, and so on);
-- details of the chip on the platform, including its precise architecture
-  variant;
-- details of the compiler tool chain used, typically the version of each
-  component and library, or for development tool chains the repository commit
-  ID of each component;
-- the compiler and linker flags used for the benchmarks, which should be the
-  same for each benchmark program; and
-- the version of Embench used.
+- if the platform is simulated or real.  If simulated, an indication of accuracy must be stated (i.e., fully cycle accurate or cycle approximate);
+- for a simulated platform, configuration options of the chip should be stated (e.g., branch predictor size, cache sizes, and so on);
+- details of the chip on the platform, including its precise architecture variant;
+- details of the compiler tool chain used, typically the version of each component and library, or for development tool chains the repository commit ID of each component;
+- the compiler and linker flags used for the benchmarks, which should be the same for each benchmark program; and
+- the version of Embench DSP used.
 
-For clarification compiler flags, whose effect is to vary the choice and
-parameters of optimization passes on a per program (or per compilation unit or
-function) basis are permitted.  For example flags which use machine learning
-techniques to match source code styles with the a choice of optimization
-passes.
+For clarification compiler flags, whose effect is to vary the choice and parameters of optimization passes on a per program (or per compilation unit or function) basis are permitted.  For example flags which use machine learning techniques to match source code styles with the a choice of optimization passes.
 
-The philosophy of recorded data should be such that anyone else can take the
-same platform and tool chain and duplicate the results.
+The philosophy of recorded data should be such that anyone else can take the same platform and tool chain and duplicate the results.
 
 ## Statistics of computing benchmarks
 
@@ -325,82 +300,50 @@ These computations are carried out by the benchmark scripts.
 
 ### Computing a benchmark value for speed
 
-The benchmarks should be compiled with `cflags` and `ldflags` that optimize
-for speed, such as `-O2`.
+The benchmarks should be compiled with `cflags` and `ldflags` that optimize for speed, such as `-O2`.
 
 Carry out the following steps.
 
-- For each benchmark record the time take to execute between `start_trigger`
-  and `stop_trigger`, which should be a few seconds.
-- This time should be recorded using hardware internal to the device being
-  benchmarked - e.g., CPU cycle counter or other fast timer (i.e., running at
-  a significantly higher rate than the benchmark takes to run).
-- For each benchmark, compute its speed relative to the reference platform -
-  see [Reference platform](#reference-platform) - by dividing the normalized
-  time value of the reference benchmark by the time calculated in
-  the previous step and multiplying the result by `gsf`.
+- For each benchmark record the time take to execute between `start_trigger` and `stop_trigger`.
+- This time should be recorded using hardware internal to the device being benchmarked - e.g., CPU cycle counter or other fast timer (i.e., running at a significantly higher rate than the benchmark takes to run).
+- For each benchmark, compute its speed relative to the reference platform - see [Reference platform](#reference-platform) - by dividing the normalized time value of the reference benchmark by the time calculated in the previous step.
 - Divide the relative score by `cpy_mhz`.
-- Calculate the geometric mean, geometric standard deviation and range of one
-  geometric standard deviation of the relative speeds.
+- Calculate the geometric mean, geometric standard deviation and range of one geometric standard deviation of the relative speeds.
 
-The benchmark value is the geometric mean of the relative speeds. A larger
-value means a faster platform.  The range gives an indication of how much
-variability there is in this performance.
+The benchmark value is the geometric mean of the relative speeds. A larger value means a faster platform.  The range gives an indication of how much variability there is in this performance.
 
-In addition the geometric mean may then be divided by the value used for
-CPU_MHZ, to yield an Embench score per MHz. This is an indication of the
-efficiency of the platform in carrying out computation.
+In addition the geometric mean may then be divided by the value used for CPU_MHZ, to yield an Embench score per MHz. This is an indication of the efficiency of the platform in carrying out computation.
 
 ### Computing a benchmark value for code size
 
-The benchmarks should be compiled with `cflags` and `ldflags` that optimize
-for size, such as `-Os`.  The sections that count towards code size are
-specified in the `--metric` option when building.  By default just text
-sections are counted.
+The benchmarks should be compiled with `cflags` and `ldflags` that optimize for size, such as `-Os`.  The sections that count towards code size are specified in the `--metric` option when building.  By default just text sections are counted.
 
-There is a fixed overhead to all benchmarks, which we wish to exclude when
-benchmarking.  This is done by compiling a dummy benchmark, which has no body,
-and subtracting its size from the size of sections when measured.
+There is a fixed overhead to all benchmarks, which we wish to exclude when benchmarking.  This is done by compiling a dummy benchmark, which has no body, and subtracting its size from the size of sections when measured.
 
 - For each benchmark record the size of all sections of the chosen metric.
 - Subtract the sum of all chosen metric sections of the `dummy-benchmark` from
-- For each benchmark, compute its size relative to the reference platform -
-  see [Reference platform](#reference-platform) - by dividing the size
-  recorded in the previous step by the size of the corresponding reference
-  benchmark.
-- Take the set of relative scores for all benchmarks and calculate the
-  geometric mean, geometric standard deviation and range of one
-  geometric standard deviation of the relative size.
+- For each benchmark, compute its size relative to the reference platform - see [Reference platform](#reference-platform) - by dividing the size recorded in the previous step by the size of the corresponding reference benchmark.
+- Take the set of relative scores for all benchmarks and calculate the geometric mean, geometric standard deviation and range of one geometric standard deviation of the relative size.
 
-The benchmark value is the geometric mean of the relative size. A larger value
-means code is larger.  The range gives an indication of how much variability
-there is in this measurement.
+The benchmark value is the geometric mean of the relative size. A larger value means code is larger.  The range gives an indication of how much variability there is in this measurement.
 
-**NOTE** The computation of the relative value is inverted compared to the
-  computation for speed.  This means that for size, **small** is good.
+**NOTE** The computation of the relative value is inverted compared to the computation for speed.  This means that for size, **small** is good.
 
-**NOTE** Older versions of the GNU _size_ program report the size of `.text` +
-`.rodata` section.  In measuring the size, the script requires a version of
-GNU _size_ which supports the `-G` flag, which will yield the size of just
-`.text` sections.
+**NOTE** Older versions of the GNU _size_ program report the size of `.text` + `.rodata` section.  In measuring the size, the script requires a version of GNU _size_ which supports the `-G` flag, which will yield the size of just `.text` sections.
 
-## Adding a new board to Embench
+## Adding a new board to Embench DSP
 
 ### Creating a configuration for the new board
 
-The configurations are in the `examples` directory and grouped by processor
-type.
+The configurations are in the `examples` directory and grouped by processor type.
 
-Thus if we wanted to create a new configuration for the `mynewboard` board
-which has a 32-bit RISC-V processor, we would create a new directory:
+Thus if we wanted to create a new configuration for the `mynewboard` board which has a 32-bit RISC-V processor, we would create a new directory:
 ```
 mkdir examples/riscv32/mynewboard
 ```
 In here, we create two files, `boardsupport.c` and `boardsupport.h`.
 
-`boardsupport.h` can be empty, but is available if desired to specify default
-values of some of the _scons_ variables (e.g. `CPU_MHZ`, `GLOBAL_SCALE_FACTOR`
-or `WARMUP_HEAT`.  Remember you can always override these values from the
+`boardsupport.h` can be empty, but is available if desired to specify default values of some of the _scons_ variables (e.g. `CPU_MHZ`.  Remember you can always override these values from the
 command line.
 
 `boardsupport.c` must define three `void` functions:
@@ -409,13 +352,9 @@ command line.
 - `start_trigger` which is called at the start of the test run; and
 - `stop_trigger` which is called at the end of the test run.
 
-It is usual for this file to include `support.h` to pick up any board and chip
-specific definitions that may prove useful.
+It is usual for this file to include `support.h` to pick up any board and chip specific definitions that may prove useful.
 
-Typically the tests are run using GDB and a remote GDB server to load the
-programs into a remote target.  This can set breakpoint on `start_trigger` and
-`stop_trigger` to start and stop timing.  In this case, these two function
-need no actual content, and the following is a sufficient implementation:
+Typically the tests are run using GDB and a remote GDB server to load the programs into a remote target.  This can set breakpoint on `start_trigger` and `stop_trigger` to start and stop timing.  In this case, these two function need no actual content, and the following is a sufficient implementation:
 
 ```C
 void
@@ -431,16 +370,11 @@ stop_trigger ()
 }
 ```
 
-By marking the inline assembly volatile and clobbering memory, we guarantee a
-function which will just contain a return statement.
+By marking the inline assembly volatile and clobbering memory, we guarantee a function which will just contain a return statement.
 
-However alternative implementations may invoke an on-chip timer, writing values
-into global variables which can be read from the debugger.  This is the case
-for the Arm reference board.
+However alternative implementations may invoke an on-chip timer, writing values into global variables which can be read from the debugger.  This is the case for the Arm reference board.
 
-Other files specific to the board may also be in this directory.  For example
-OpenOCD configuration files and linker scripts for use when building the
-programs.
+Other files specific to the board may also be in this directory.  For example OpenOCD configuration files and linker scripts for use when building the programs.
 
 ### Configuration variables
 
