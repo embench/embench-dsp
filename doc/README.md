@@ -1,8 +1,8 @@
 # Embench&#x2122; DSP User Guide
 
 <!--
-Contributor Jeremy Bennett <jeremy.bennett@embecosm.com>
-Contributor Roger Shepherd <roger.shepherd@rcjd.net>
+Contributor Jennifer Hellar <jlhellar@proton.me>
+Contributor Konrad Moron <k.moron@mailbox.org>
 
 SPDX-License-Identifier: GFDL-1.2
 
@@ -24,13 +24,8 @@ Issue:   1.0
 <!-- ToC can be updated using 'make toc' in a Linux like systems -->
 <!-- Insert ToC here -->
 
-- [About Embench](#about-embench)
-    - [The Bristol/Embecosm Embedded Benchmark Suite (BEEBS)](#the-bristolembecosm-embedded-benchmark-suite-beebs)
-    - [Future work](#future-work)
-    - [Feedback and how to contribute](#feedback-and-how-to-contribute)
-    - [Contributors](#contributors)
-    - [Document history](#document-history)
-- [Building and running Embench](#building-and-running-embench)
+- [Future work](#future-work)
+- [Building and running Embench DSP](#building-and-running-embench-dsp)
     - [Prerequisites](#prerequisites)
     - [Preparation](#preparation)
     - [Configuring the benchmarks](#configuring-the-benchmarks)
@@ -62,6 +57,9 @@ Issue:   1.0
     - [Addendum: how to use this License for your documents](#addendum-how-to-use-this-license-for-your-documents)
 
 <!-- End of ToC insertion -->
+
+## Future work
+The benchmarks presently do not implement global scaling factors or cache warmup features as Embench-IoT does.  This is left to a future release of the benchmark suite.
 
 ## Building and running Embench DSP
 
