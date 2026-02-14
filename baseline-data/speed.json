@@ -1,0 +1,12 @@
+{
+  "biquad_cascade_df2T_f32_sos3_n1" : 10,
+  "biquad_cascade_df2T_f32_sos3_n128" : 510,
+  "dct4_2048_f32" : 19296,
+  "dct4_512_f32" : 4536,
+  "fir_f32_taps256_n1" : 244,
+  "fir_f32_taps256_n128" : 18651,
+  "lms_f32_taps256_n1" : 454,
+  "lms_f32_taps256_n128" : 47404,
+  "rfft2048_f32" : 9704,
+  "rfft512_f32" : 2131
+}

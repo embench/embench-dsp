@@ -1,0 +1,4 @@
+matplotlib==3.9.4
+numpy==2.0.2
+padasip==1.2.2
+scipy==1.13.1
